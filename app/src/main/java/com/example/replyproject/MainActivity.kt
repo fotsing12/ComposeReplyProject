@@ -211,13 +211,7 @@ fun PhoneView(modifier: Modifier = Modifier) {
                     shape = RoundedCornerShape(12.dp),
                     color = Color.LightGray
                 ) {
-                    Row {
-                        val context = LocalContext.current
-                        val inputStream = context.assets.open("${messageItem.senderProfileImageName}.png")
-                        val bitmap = BitmapFactory.decodeStream(inputStream).asImageBitmap()
 
-                        Image(bitmap = bitmap, contentDescription = "Profile")
-                    }
                 }
             }
         }
