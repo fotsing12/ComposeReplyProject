@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -42,6 +43,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
@@ -59,9 +61,11 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MonotonicFrameClock
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -76,6 +80,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import com.example.replyproject.ui.theme.ReplyProjectTheme
+import kotlinx.coroutines.launch
 
 
 data class BottomNavigationItem(
@@ -176,29 +181,97 @@ fun TabletView(modifier: Modifier = Modifier) {
     var drawerState = rememberDrawerState(DrawerValue.Closed)
     var text by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     ModalNavigationDrawer(
-        drawerContent = {
-
-        },
-        modifier = Modifier,
         drawerState = drawerState,
-        gesturesEnabled = true,
+        drawerContent = {
+            Column(
+                modifier = Modifier
+                    .background(Color(0xFFF2F0F4))
+                    .padding(20.dp)
+                    .width(500.dp)
+                    .fillMaxHeight()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(start = 20.dp, top = 20.dp, bottom = 30.dp),
+                ) {
+                    Text(text = "REPLY",
+                        color = Color.Blue
+                    )
+                    IconButton(
+                        onClick = {
+                            scope.launch {
+                                drawerState.close()
+                            }
+                        }
+                    ){
+                        Icon(Icons.Default.Menu,
+                            contentDescription = "Menu")
+                    }
+                }
+
+                ExtendedFloatingActionButton(
+                    onClick = {},
+                    containerColor = Color(0xFFFFD6f7),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ){
+                    IconButton(
+                        onClick = {}
+                    ){
+                        Icon(Icons.Default.Edit, contentDescription = "Edit")
+                    }
+                    Text(text = "Compose",
+                        modifier = Modifier
+                            .padding(start = 30.dp)
+                    )
+                }
+                Spacer(modifier = Modifier
+                    .height(120.dp)
+                )
+                items.forEachIndexed{ index, item ->
+                    Spacer(modifier = Modifier
+                        .height(30.dp)
+                    )
+                    NavigationDrawerItem(
+                        modifier = Modifier.background(Color(0xFFF2F0F4)),
+                        selected = index == 0,
+                        onClick = {},
+                        icon = {
+                            Icon(item.selectedIcon,
+                                contentDescription = item.title,
+                                modifier = Modifier
+                                    .size(40.dp)
+                            )
+                        },
+                        label = { Text(item.title) }
+                    )
+                }
+            }
+        },
+        modifier = Modifier
+            .fillMaxSize(),
     ) {
         NavigationRail(
             modifier = Modifier
                 .width(120.dp),
             containerColor = Color(0xFFF2F0F4),
             header = {
-                Icon(Icons.Default.Menu,
+                IconButton(
+                    onClick = {
+                        scope.launch {
+                            drawerState.open()
+                        }
+                    }
+                ){
+                    Icon(Icons.Default.Menu,
                     contentDescription = "Menu",
                     modifier = Modifier
                         .padding(top = 30.dp)
-                        .size(35.dp)
-                        .clickable {
-                            drawerState = DrawerState(DrawerValue.Open)
-                        },
-                )
+                        .size(35.dp))
+                }
             }
         ) {
             Column(
