@@ -33,9 +33,12 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.sharp.Settings
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -268,10 +271,9 @@ fun DesktopView(modifier: Modifier = Modifier) {
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .background(Color.Red)
                     .fillMaxHeight()
             ) {
-
+                ReplySection(screenSize = "extended", last = true)
             }
         }
     }
@@ -482,7 +484,7 @@ fun PhoneView(modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReplySection(modifier: Modifier = Modifier, screenSize: String) {
+fun ReplySection(modifier: Modifier = Modifier, screenSize: String, last: Boolean = false) {
     var text by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
     val fontSize = when(screenSize) {
@@ -503,50 +505,80 @@ fun ReplySection(modifier: Modifier = Modifier, screenSize: String) {
             .background(color = Color(0xFFF2F0F4))
 
     ) {
-        SearchBar(
-            query = text,
-            onQueryChange = { text = it },
-            onSearch = { active = false },
-            active = active,
-            placeholder = { Text("search replies") },
-            leadingIcon = {
-                Icon(Icons.Default.Search, contentDescription = null)
-            },
-            trailingIcon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.luffy),
-                    contentDescription = "luffy",
-                    tint = Color.Unspecified,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
+        if(!last){
+            SearchBar(
+                query = text,
+                onQueryChange = { text = it },
+                onSearch = { active = false },
+                active = active,
+                placeholder = { Text("search replies") },
+                leadingIcon = {
+                    Icon(Icons.Default.Search, contentDescription = null)
+                },
+                trailingIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.luffy),
+                        contentDescription = "luffy",
+                        tint = Color.Unspecified,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
 
-                )
-            },
-            onActiveChange = {},
-            modifier = Modifier
-                .padding(20.dp)
+                    )
+                },
+                onActiveChange = {},
+                modifier = Modifier
+                    .padding(20.dp)
+                    .fillMaxWidth(),
+                enabled = true,
+            ){
+
+            }
+        }
+        else{
+            Row(modifier = Modifier
+                .padding(start = 30.dp, end = 30.dp, top = 30.dp, bottom = 13.dp)
                 .fillMaxWidth(),
-            enabled = true,
-        ){
-
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column() {
+                    Text("Package Shipped!",
+                        fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(modifier = Modifier
+                        .size(8.dp)
+                    )
+                    Text("7 messages",
+                        fontSize = MaterialTheme.typography.titleSmall.fontSize
+                    )
+                }
+                Spacer(modifier = Modifier
+                    .size(60.dp)
+                )
+                Icon(Icons.Default.MoreVert, contentDescription = "moreVert")
+            }
         }
         messageItems.forEach { messageItem ->
+            val heightDp = when (Pair(screenSize, last)) {
+                Pair("compact", false) -> 160.dp
+                Pair("medium", false) -> 260.dp
+                Pair("extended", false) -> 260.dp
+                Pair("extended", true ) -> 400.dp
+                else -> null
+            }
             Surface(
                 modifier = Modifier
-                    .height(
-                        when (screenSize) {
-                            "compact" -> 160.dp
-                            "medium" -> 260.dp
-                            "extended" -> 240.dp
-                            else -> 40.dp
-                        }
-                    )
+                    .then(heightDp?.let { Modifier.height(it) } ?: Modifier )
                     .padding(start = 20.dp, end = 20.dp, bottom = 8.dp)
                     .fillMaxWidth()
                     .clickable { },
                 shape = RoundedCornerShape(12.dp),
-                color = Color(0xFFE2E1EC)
+                color = if(!last){
+                    Color(0xFFE2E1EC)
+                } else{
+                    Color.White
+                }
             ) {
                 Column(
                     modifier = Modifier
@@ -622,6 +654,39 @@ fun ReplySection(modifier: Modifier = Modifier, screenSize: String) {
                             .padding(top = 5.dp),
                         fontSize = textMessageFontSize?: TextUnit.Unspecified
                     )
+                    if(last){
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color.White),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ){
+                            Button(
+                                onClick = {},
+                                modifier = Modifier
+                                    .width(180.dp)
+                                    .height(40.dp),
+                                colors = ButtonColors(
+                                    containerColor = Color.LightGray, contentColor = Color.Black,
+                                    disabledContainerColor = Color.LightGray,
+                                    disabledContentColor = Color.Black,
+                                )
+                            ) {
+                                Text("Reply")
+                            }
+                            Button(
+                                onClick = {},
+                                modifier = Modifier.width(180.dp).height(40.dp),
+                                colors = ButtonColors(
+                                    containerColor = Color.LightGray, contentColor = Color.Black,
+                                    disabledContainerColor = Color.LightGray,
+                                    disabledContentColor = Color.Black,
+                                )
+                            ) {
+                                Text("Reply All")
+                            }
+                        }
+                    }
                 }
             }
         }
