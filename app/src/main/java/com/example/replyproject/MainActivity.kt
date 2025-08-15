@@ -46,12 +46,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.PermanentDrawerSheet
+import androidx.compose.material3.PermanentNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
@@ -158,6 +161,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun MyApp(activity: ComponentActivity) {
@@ -170,10 +174,109 @@ fun MyApp(activity: ComponentActivity) {
                 TabletView()
             }
             WindowWidthSizeClass.Expanded -> {
-                Text("Desktop Layout")
+                DesktopView()
             }
         }
 }
+
+@Composable
+fun DesktopView(modifier: Modifier = Modifier) {
+    var text by remember { mutableStateOf("") }
+    var active by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    PermanentNavigationDrawer(
+        drawerContent = {
+            PermanentDrawerSheet(
+                modifier = Modifier
+            ) {
+                Column(
+                    modifier = Modifier
+                        .background(Color(0xFFF2F0F4))
+                        .padding(20.dp)
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .padding(start = 20.dp, top = 20.dp, bottom = 30.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+
+                        ) {
+                        Text(text = "REPLY",
+                            color = Color.Blue
+                        )
+                        IconButton(
+                            modifier  = Modifier.padding(start = 180.dp),
+                            onClick = {
+                            }
+                        ){
+                            Icon(Icons.Default.Menu,
+                                contentDescription = "Menu",
+                                modifier = Modifier.size(30.dp))
+                        }
+                    }
+
+                    ExtendedFloatingActionButton(
+                        onClick = {},
+                        containerColor = Color(0xFFFFD6f7),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ){
+                        IconButton(
+                            onClick = {}
+                        ){
+                            Icon(Icons.Default.Edit, contentDescription = "Edit")
+                        }
+                        Text(text = "Compose",
+                            modifier = Modifier
+                                .padding(start = 30.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier
+                        .height(120.dp)
+                    )
+                    items.forEachIndexed{ index, item ->
+                        Spacer(modifier = Modifier
+                            .height(30.dp)
+                        )
+                        NavigationDrawerItem(
+                            modifier = Modifier.background(Color(0xFFF2F0F4)),
+                            selected = index == 0,
+                            onClick = {},
+                            icon = {
+                                Icon(item.selectedIcon,
+                                    contentDescription = item.title,
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                )
+                            },
+                            label = { Text(item.title) }
+                        )
+                    }
+                }
+            }
+        },
+        modifier = Modifier
+
+    ){
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            ReplySection(screenSize = "extended", modifier = Modifier.weight(1f))
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .background(Color.Red)
+                    .fillMaxHeight()
+            ) {
+
+            }
+        }
+    }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -186,73 +289,81 @@ fun TabletView(modifier: Modifier = Modifier) {
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            Column(
-                modifier = Modifier
-                    .background(Color(0xFFF2F0F4))
-                    .padding(20.dp)
-                    .width(500.dp)
-                    .fillMaxHeight()
-            ) {
-                Row(
-                    modifier = Modifier
-                        .padding(start = 20.dp, top = 20.dp, bottom = 30.dp),
-                ) {
-                    Text(text = "REPLY",
-                        color = Color.Blue
-                    )
-                    IconButton(
-                        onClick = {
-                            scope.launch {
-                                drawerState.close()
-                            }
-                        }
-                    ){
-                        Icon(Icons.Default.Menu,
-                            contentDescription = "Menu")
-                    }
-                }
+           ModalDrawerSheet(
+               modifier = Modifier
+           ) {
+               Column(
+                   modifier = Modifier
+                       .background(Color(0xFFF2F0F4))
+                       .padding(20.dp)
+                       .fillMaxWidth()
+                       .fillMaxHeight()
+               ) {
+                   Row(
+                       modifier = Modifier
+                           .padding(start = 20.dp, top = 20.dp, bottom = 30.dp),
+                       verticalAlignment = Alignment.CenterVertically,
 
-                ExtendedFloatingActionButton(
-                    onClick = {},
-                    containerColor = Color(0xFFFFD6f7),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ){
-                    IconButton(
-                        onClick = {}
-                    ){
-                        Icon(Icons.Default.Edit, contentDescription = "Edit")
-                    }
-                    Text(text = "Compose",
-                        modifier = Modifier
-                            .padding(start = 30.dp)
-                    )
-                }
-                Spacer(modifier = Modifier
-                    .height(120.dp)
-                )
-                items.forEachIndexed{ index, item ->
-                    Spacer(modifier = Modifier
-                        .height(30.dp)
-                    )
-                    NavigationDrawerItem(
-                        modifier = Modifier.background(Color(0xFFF2F0F4)),
-                        selected = index == 0,
-                        onClick = {},
-                        icon = {
-                            Icon(item.selectedIcon,
-                                contentDescription = item.title,
-                                modifier = Modifier
-                                    .size(40.dp)
-                            )
-                        },
-                        label = { Text(item.title) }
-                    )
-                }
-            }
+                   ) {
+                       Text(text = "REPLY",
+                           color = Color.Blue
+                       )
+                       IconButton(
+                           modifier  = Modifier.padding(start = 180.dp),
+                           onClick = {
+                               scope.launch {
+                                   drawerState.close()
+                               }
+                           }
+                       ){
+                           Icon(Icons.Default.Menu,
+                               contentDescription = "Menu",
+                               modifier = Modifier.size(30.dp))
+                       }
+                   }
+
+                   ExtendedFloatingActionButton(
+                       onClick = {},
+                       containerColor = Color(0xFFFFD6f7),
+                       modifier = Modifier
+                           .fillMaxWidth()
+                   ){
+                       IconButton(
+                           onClick = {}
+                       ){
+                           Icon(Icons.Default.Edit, contentDescription = "Edit")
+                       }
+                       Text(text = "Compose",
+                           modifier = Modifier
+                               .padding(start = 30.dp)
+                       )
+                   }
+                   Spacer(modifier = Modifier
+                       .height(120.dp)
+                   )
+                   items.forEachIndexed{ index, item ->
+                       Spacer(modifier = Modifier
+                           .height(30.dp)
+                       )
+                       NavigationDrawerItem(
+                           modifier = Modifier.background(Color(0xFFF2F0F4)),
+                           selected = index == 0,
+                           onClick = {},
+                           icon = {
+                               Icon(item.selectedIcon,
+                                   contentDescription = item.title,
+                                   modifier = Modifier
+                                       .size(40.dp)
+                               )
+                           },
+                           label = { Text(item.title) }
+                       )
+                   }
+               }
+           }
         },
         modifier = Modifier
-            .fillMaxSize(),
+
     ) {
         NavigationRail(
             modifier = Modifier
@@ -260,6 +371,8 @@ fun TabletView(modifier: Modifier = Modifier) {
             containerColor = Color(0xFFF2F0F4),
             header = {
                 IconButton(
+                    modifier = Modifier
+                        .size(70.dp),
                     onClick = {
                         scope.launch {
                             drawerState.open()
@@ -270,7 +383,7 @@ fun TabletView(modifier: Modifier = Modifier) {
                     contentDescription = "Menu",
                     modifier = Modifier
                         .padding(top = 30.dp)
-                        .size(35.dp))
+                    )
                 }
             }
         ) {
@@ -384,7 +497,7 @@ fun ReplySection(modifier: Modifier = Modifier, screenSize: String) {
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .verticalScroll(rememberScrollState())
             .padding(bottom = 76.dp)
             .background(color = Color(0xFFF2F0F4))
@@ -421,12 +534,14 @@ fun ReplySection(modifier: Modifier = Modifier, screenSize: String) {
         messageItems.forEach { messageItem ->
             Surface(
                 modifier = Modifier
-                    .height(when(screenSize) {
-                        "compact" -> 160.dp
-                        "medium" -> 260.dp
-                        "extended" -> 240.dp
-                        else -> 40.dp
-                    })
+                    .height(
+                        when (screenSize) {
+                            "compact" -> 160.dp
+                            "medium" -> 260.dp
+                            "extended" -> 240.dp
+                            else -> 40.dp
+                        }
+                    )
                     .padding(start = 20.dp, end = 20.dp, bottom = 8.dp)
                     .fillMaxWidth()
                     .clickable { },
@@ -448,7 +563,7 @@ fun ReplySection(modifier: Modifier = Modifier, screenSize: String) {
                             contentDescription = "Profile Image",
                             modifier = Modifier
                                 .size(
-                                    when(screenSize) {
+                                    when (screenSize) {
                                         "compact" -> 40.dp
                                         "medium" -> 60.dp
                                         "extended" -> 60.dp
@@ -476,12 +591,14 @@ fun ReplySection(modifier: Modifier = Modifier, screenSize: String) {
                             )
                         }
                         Box(modifier = Modifier
-                            .size(when(screenSize) {
-                                "compact" -> 45.dp
-                                "medium" -> 65.dp
-                                "extended" -> 65.dp
-                                else -> 45.dp
-                            })
+                            .size(
+                                when (screenSize) {
+                                    "compact" -> 45.dp
+                                    "medium" -> 65.dp
+                                    "extended" -> 65.dp
+                                    else -> 45.dp
+                                }
+                            )
                             .clip(CircleShape)
                             .background(color = Color.White),
                             contentAlignment = Alignment.Center
